@@ -1,10 +1,10 @@
 {
-  "name": "projects405",
+  "name": "project_A101",
   "version": "1.0.0",
   "description": "hospitality make easy for future",
   "main": "index.js",
   "scripts": {
-    "start":"nodemon index.js",
+    "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,9 +19,15 @@
   "homepage": "https://github.com/SanketsCode/Project-S405#readme",
   "dependencies": {
     "body-parser": "^1.20.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
-    "mongoose": "^6.4.4",
-    "nodemon": "^2.0.19"
+    "express-jwt": "^7.7.5",
+    "express-validator": "^6.14.2",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.4.5",
+    "nodemon": "^2.0.19",
+    "uuid": "^8.3.2"
   }
 }
