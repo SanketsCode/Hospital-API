@@ -7,17 +7,24 @@ const cors = require('cors');
 
 require('dotenv/config');
 
+//routes
+const authRouter = require('./routes/auth');
+
 
 //middlewares
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(cors());
 
+//Routes
+app.use('/api',authRouter);
+
+
 //db 
 mongoose.connect(process.env.DATABASE,{
     useNewUrlParser : true,
     useUnifiedTopology: true,
-    dbName:'Hospital_Appoinment'
+    dbName:'Hospital_Help'
 }).then(() => {
     console.log("DB CONNECTED");
 }).catch(err => {

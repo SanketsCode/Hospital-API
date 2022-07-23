@@ -12,7 +12,8 @@ let userSchema = new mongoose.Schema({
     },
     email:{
         type:String,
-        maxlength:32
+        maxlength:32,
+        required:true
     },
     encry_password: {
         type: String,
@@ -21,21 +22,17 @@ let userSchema = new mongoose.Schema({
     Phone_no: {
         type:Number,
         required:true,
-        maxlength:10
+        minlength:9
     },
     Profile_photo:{
       type:String,
       required:false
     },
     salt: String,
-    Running_Appointments:{
-        type:Array,
-        default:[]
+    All_Appointments:{
+      type:Array,
+      default:[]
     },
-    Appointment_History :{
-        type:Array,
-        default:[]
-    }
 },{timestamps:true});
 
 userSchema
