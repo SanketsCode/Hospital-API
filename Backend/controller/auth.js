@@ -145,8 +145,8 @@ const isSignedIn = expressJwt({
 })
 
 //checking for authication for hospital
-const isAuthenticated = (req,res,next) => {
-    let checker = req.profile && req.auth && req.profile._id == req.auth._id;
+const isAuthenticated = (req,res,next) => {   
+    let checker = req.auth;
     if(!checker){
         return res.status(403).json({
             error :"Access denide"

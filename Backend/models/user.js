@@ -30,8 +30,8 @@ let userSchema = new mongoose.Schema({
     },
     salt: String,
     All_Appointments:{
-      type:Array,
-      default:[]
+      type:Object,
+      default:{}
     },
 },{timestamps:true});
 

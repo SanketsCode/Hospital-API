@@ -9,6 +9,9 @@ require('dotenv/config');
 
 //routes
 const authRouter = require('./routes/auth');
+const userRouter = require('./routes/users');
+
+
 
 
 //middlewares
@@ -18,6 +21,8 @@ app.use(cors());
 
 //Routes
 app.use('/api',authRouter);
+app.use('/api',userRouter);
+
 
 
 //db 
@@ -34,5 +39,5 @@ mongoose.connect(process.env.DATABASE,{
 
 
 app.listen(process.env.PORT,() => {
-    console.log("Listening on PORT "+process.env.PORT);
+    console.log("Listening on PORT "+ process.env.PORT);
 })

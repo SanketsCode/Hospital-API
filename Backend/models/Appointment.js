@@ -13,6 +13,14 @@ const Appoinment_Schema = mongoose.Schema({
         type:String,
         required:true
     },
+    hospital_id:{
+        type:String,
+        required:true
+    },
+    user_id:{
+        type:String,
+        required:true
+    },
     Patient_Name:{
         type:String,
         required:true
@@ -28,7 +36,7 @@ const Appoinment_Schema = mongoose.Schema({
     Appointment_Status:{
         type: String,
       default: "Pending",
-      enum: ["Pending","Successfull","Running"]
+      enum: ["Pending","Successfull","Running","Rejected"]
         
     }
 
