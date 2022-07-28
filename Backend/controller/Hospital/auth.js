@@ -1,8 +1,8 @@
+
 const {validationResult} = require('express-validator');
 const jwt = require('jsonwebtoken');
+const Hospital = require('../../models/hospital');
 const {expressjwt:expressJwt} = require('express-jwt');
-const Hospital = require('../models/hospital');
-const User = require('../models/user');
 
 
 
@@ -30,33 +30,6 @@ const Hospital_SignUp = (req,res) => {
     })
 }
 
-
-//sign up controller for user
-const User_SignUp = (req,res) => {
-    const errors = validationResult(req);
-
-    if(!errors.isEmpty()){
-        return  res.status(400).json({error:errors.array()[0].msg});
-    }
-
-    const user = new User(req.body);
-    user.save((err,user) => {
-        if(err){
-            console.log(err);
-            return res.status(400).json({
-                error:"Problem to Save in DB"
-            });
-        }
-
-        res.json({
-            name:user.name,
-            email:user.email,
-            address:user.address
-        });
-    })
-}
-
-//sign IN
 
 //hospital
 const Hospital_SignIn = (req,res) => {
@@ -93,59 +66,23 @@ const Hospital_SignIn = (req,res) => {
     })
 }
 
-//user
-const User_SignIn = (req,res) => {
-    const errors = validationResult(req);
 
-    if(!errors.isEmpty()){
-        return  res.status(400).json({error:errors.array()[0].msg});
-    }
-
-    const {email,password} = req.body;
-
-    User.findOne({email},(err,user) => {
-        if(err || !user){
-            return res.status(401).json({
-                error:"Email does not exists"
-            });
-        }
-
-        if(!user.autheticate(password)){
-            return res.status(401).json({
-                error:"Email and Password do not match"
-            });
-        }
-
-        //create token
-        const token = jwt.sign({_id:user._id},process.env.SECRET);
-        //put token in cookie
-        res.cookie("token",token,{expire:new Date() + 9999});
-
-        //send response to front end
-        const {_id,name,email} = user;
-        return res.json({token,user:{_id,name,email}});
-
-    })
+const getHospital = (req,res) => {
+    req.hospital.salt = undefined;
+    req.hospital.encry_password = undefined;
+    req.hospital.updatedAt = undefined;
+    return res.json(req.hospital);
 }
-
-//sign out for both
-const signout = (req,res) => {
-    res.clearCookie("token");
-    return res.json({
-        msg : "User sign out successfully"
-    })
-}
-
 
 //protected routes
-const isSignedIn = expressJwt({
+const isHospitalSignedIn = expressJwt({
     secret: process.env.SECRET,
     algorithms: ["HS256"],
     userProperty : "auth"
 })
 
 //checking for authication for hospital
-const isAuthenticated = (req,res,next) => {   
+const isHospitalAuthenticated = (req,res,next) => {   
     let checker = req.auth;
     if(!checker){
         return res.status(403).json({
@@ -156,7 +93,4 @@ const isAuthenticated = (req,res,next) => {
 }
 
 
-
-//checking for authentication for user
-
-module.exports = {signout,Hospital_SignIn,Hospital_SignUp,isSignedIn,isAuthenticated,User_SignIn,User_SignUp};
+module.exports = {isHospitalAuthenticated,isHospitalSignedIn,Hospital_SignIn,Hospital_SignUp,getHospital};

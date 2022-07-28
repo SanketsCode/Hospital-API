@@ -24,10 +24,18 @@ let hospitalSchema = new mongoose.Schema({
         type:String,
         required:true
     },
-    All_Appointments:{
-      type:Object,
-      default:{}
-    },
+    Appointments_Pending:{
+      type:Array,
+      default:[]
+  },
+  Appointments_Running:{
+    type:Array,
+    default:[]
+  },
+  Appointments_history:{
+    type:Array,
+    default:[]
+  },
     Images:{
       type:Array,
       default:[]

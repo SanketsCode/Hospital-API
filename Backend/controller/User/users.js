@@ -1,15 +1,20 @@
-const Hospital = require('../models/hospital');
-const User = require('../models/user');
+const Hospital = require('../../models/hospital');
+const User = require('../../models/user');
 const formidable = require("formidable");
 const _ = require("lodash");
 const fs = require("fs");
-const Appointment = require('../models/Appointment');
+const Appointment = require('../../models/Appointment');
 
 
 //getting all hospital details
 const getAllHospitals = async (req,res) => {
     let hospitals = await Hospital.find({});
-    res.status(200).json(hospitals);
+    let secure_hospitals = [];
+    hospitals.forEach(hospital => {
+        const {name,email,contact_no,address,Images,_id} = hospital;
+        secure_hospitals.push({_id,name,email,contact_no,address,Images})
+    });
+    res.status(200).json(secure_hospitals);
 }
 
 //get a perticular hospital details
@@ -29,6 +34,9 @@ const getHospitalById = (req,res,next,id) => {
 
 
 const getHospital = (req,res) => {
+    req.hospital.salt = undefined;
+    req.hospital.encry_password = undefined;
+    req.hospital.updatedAt = undefined;
     return res.json(req.hospital);
 }
 
@@ -65,7 +73,9 @@ const sendAppointment = (req,res) => {
             error:"All Fields are Required!"
         })
     }
-
+    // console.log(req.auth._id,req.hospital._id);
+    // return res.status(200).json({msg:"check"})
+    
     const appointment = new Appointment({
         hospital_id:req.hospital._id,
         Hospital_Name: req.hospital.name,
@@ -77,6 +87,39 @@ const sendAppointment = (req,res) => {
         Patient_Contact
     });
 
+    // const prev_appointment = req.hospital.Appointments_Pending;
+
+
+    // adding appointment to Hospital db
+    // Hospital.findByIdAndUpdate(
+    //     {_id:req.hospital._id},
+    //     {$set:{Appointments_Pending:[...prev_appointment,appointment]}},
+    //     (err,appointments) => {
+
+    //         if(err || !appointments){
+    //             return res.status(400).json({
+    //                 error:"Cannot Able to add Appointments in HospitalDB"
+    //             });
+    //         }
+    //     }   
+    // )
+
+//     //adding data to users db
+//    User.findByIdAndUpdate(
+//         {_id:req.auth._id},
+//         {$set:{Appointments_Pending:[...prev_appointment,appointment]}},
+//         (err,appointments) => {
+
+//             if(err){
+//                 console.log(err,appointments);
+//                 return res.status(400).json({
+//                     error:"Cannot Able to add Appointments in UserDB"
+//                 });
+//             }
+
+//             res.status(200).json(appointments);
+//         }   
+//     )
 
     appointment.save((err,Appointment) => {
         if(err || !Appointment){
@@ -103,8 +146,8 @@ const ChangeToReject = (req,res,next,id) => {
 }
 
 //get all appointments in details
-const getAllAppointments = (req,res) => {
-     let All_Appointments = Appointment.find({user_id:{$in:req.auth._id},},(err,appointment) =>{ 
+const getAllAppointmentsUsers = (req,res) => {
+   Appointment.find({user_id:{$in:req.profile._id},},(err,appointment) =>{ 
         if(err ||  !appointment){
             return res.status(400).json({
                 error : "No Data found"
@@ -119,4 +162,4 @@ const getAllAppointments = (req,res) => {
 
 
 
-module.exports = {getAllHospitals,getHospitalById,getHospital,sendAppointment,getUser,getUserById,ChangeToSuccess,ChangeToReject,getAllAppointments};
+module.exports = {getAllHospitals,getHospitalById,getHospital,sendAppointment,getUser,getUserById,ChangeToSuccess,ChangeToReject,getAllAppointmentsUsers};
