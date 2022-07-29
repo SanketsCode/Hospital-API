@@ -1,11 +1,13 @@
 const express = require('express');
-const { getUserById, getAllHospitals, getHospitalById, sendAppointment, getHospital,getUser, getAllAppointmentsUsers } = require('../../controller/User/users');
+const { getPerticularAppointment } = require('../../controller/Hospital/hospital');
+const { getUserById, getAllHospitals, getHospitalById, sendAppointment, getHospital,getUser, getAllAppointmentsUsers, getRunningAppointments, MoveToHistory } = require('../../controller/User/users');
 const { isAuthenticated,isSignedIn } = require('../../controller/User/user_auth');
 const router = express.Router();
 
 //Params
 router.param("userId",getUserById);
 router.param("hospitalId",getHospitalById);
+router.param('appointmentId',getPerticularAppointment);
 
 //Request
 
@@ -17,14 +19,21 @@ router.get('/hospitals/:hospitalId',getHospital);
 router.get('/user/:userId/pending_appointments',isSignedIn,isAuthenticated,getAllAppointmentsUsers);
 
 //retrive running appoinments list
+router.get('/user/:userId/running_appointments',isSignedIn,isAuthenticated,getRunningAppointments);
 
-//get succesfull appointments list
+
+//save appointment to history
+
+//saving successfull appointment
+router.get('/user/:userId/running_appointments/:appointmentId/success',isSignedIn,isAuthenticated,getPerticularAppointment,MoveToHistory);
+
 
 //get user for profile details
 router.get ('/users/:userId',isSignedIn,isAuthenticated,getUser);
 
 
 //post requests
+
 
 //sending appointments
 router.post('/hospitals/:hospitalId',isSignedIn,isAuthenticated,sendAppointment);

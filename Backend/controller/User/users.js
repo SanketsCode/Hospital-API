@@ -6,6 +6,7 @@ const fs = require("fs");
 const Appointment = require('../../models/Appointment');
 
 
+
 //getting all hospital details
 const getAllHospitals = async (req,res) => {
     let hospitals = await Hospital.find({});
@@ -135,14 +136,75 @@ const sendAppointment = (req,res) => {
 }
 
 
-// Changing appointment status
-const ChangeToSuccess = (req,res,id) => {
-
+// get Running appointments
+const getRunningAppointments = (req,res) => {
+    Appointment.find({user_id:req.profile._id,Appointment_Status:"Running"},(err,appointment) => {
+        if(err ||  !appointment){
+            return res.status(400).json({
+                error : "No Data found"
+            });
+        }
+        res.status(200).json(appointment);
+    })
 }
 
-//changing to rejected
-const ChangeToReject = (req,res,next,id) => {
+//move to History with Success
+const MoveToHistory = (req,res) => {
+    Appointment.findOneAndUpdate({_id:req.appointment._id,user_id:req.auth._id},{$set:{Appointment_Status:"Successfull"}}).exec((err,hospital) => {
+        if(err || !hospital){
+            return res.status(400).json({
+                error:"Not getting Appointment Data in MoveToHistory"
+            })
+        }   
 
+        const {Hospital_Name,Hospital_Contact,Hospital_Address,Patient_Name,Patient_Contact,Patient_Disease} = hospital;
+        let HistoryAppointment = {
+            Hospital_Name,
+            Hospital_Contact,
+            Hospital_Address,
+            Date: new Date(Date.now()).toString()
+        }
+
+        let HistoryAppointment_hospital = {
+            Patient_Name,
+            Patient_Contact,
+            Patient_Disease,
+            Date: new Date(Date.now()).toString()
+        }
+
+        Hospital.findByIdAndUpdate(hospital.hospital_id,{$push:{Appointments_history:HistoryAppointment_hospital}}).exec((err,data) => {
+            if(err || !data){
+                return res.status(400).json({
+                    error:"Your Data is Not Saving on History Hospital"
+                })
+            }
+        })
+
+        User.findByIdAndUpdate(req.auth._id,{$push:{Appointments_history:HistoryAppointment}}).exec((err,data) => {
+            if(err || !data){
+                return res.status(400).json({
+                    error:"Your Data is Not Saving on History Users"
+                })
+            }
+
+            
+
+            
+        })
+
+    })
+
+    Appointment.findOneAndDelete({_id:req.appointment._id,user_id:req.auth._id}).exec((err,data) => {
+        if(err || !data){
+            return res.status(400).json({
+                error:"Your Data not deleted from Appointment"
+            })
+        }
+
+        res.status(200).json({
+            msg:"Your Data saved Successfully"
+        })
+    });
 }
 
 //get all appointments in details
@@ -162,4 +224,4 @@ const getAllAppointmentsUsers = (req,res) => {
 
 
 
-module.exports = {getAllHospitals,getHospitalById,getHospital,sendAppointment,getUser,getUserById,ChangeToSuccess,ChangeToReject,getAllAppointmentsUsers};
+module.exports = {getAllHospitals,getHospitalById,getHospital,sendAppointment,getUser,getUserById,MoveToHistory,getAllAppointmentsUsers,getRunningAppointments};

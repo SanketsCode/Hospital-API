@@ -16,6 +16,10 @@ const hospitalAuth = require('./routes/hospital/auth');
 //user routes
 const userRouter = require('./routes/user/user');
 
+//hospital Routes
+const HospitalRouter = require('./routes/hospital/hospital');
+
+
 
 
 
@@ -28,6 +32,7 @@ app.use(cors());
 app.use('/api',authRouter);
 app.use('/api',userRouter);
 app.use('/api',hospitalAuth);
+app.use('/api',HospitalRouter);
 
 //db 
 mongoose.connect(process.env.DATABASE,{
