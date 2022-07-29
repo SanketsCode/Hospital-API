@@ -1,0 +1,12 @@
+Note - User data is not gone save/edit in hospital api because user_id and hospital_id is same need to create auth tokens for both of them saperately
+
+1. Need to work on hospital post request so that we can accept a status from that status decide appointment is rejected or accepted - Done
+3. Error While getting just pedding appointments - Done
+
+2. User can cancel appointment in running state it will go to canceled phase.
+4. forgot password feature in User/hospital
+5. email varification both of them
+
+
+
+

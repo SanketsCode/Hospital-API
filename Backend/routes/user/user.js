@@ -1,6 +1,6 @@
 const express = require('express');
 const { getPerticularAppointment } = require('../../controller/Hospital/hospital');
-const { getUserById, getAllHospitals, getHospitalById, sendAppointment, getHospital,getUser, getAllAppointmentsUsers, getRunningAppointments, MoveToHistory } = require('../../controller/User/users');
+const { getUserById, getAllHospitals, getHospitalById, sendAppointment, getHospital,getUser, getAllAppointmentsUsers, getRunningAppointments, MoveToHistory, seePerticularAppointment } = require('../../controller/User/users');
 const { isAuthenticated,isSignedIn } = require('../../controller/User/user_auth');
 const router = express.Router();
 
@@ -20,7 +20,7 @@ router.get('/user/:userId/pending_appointments',isSignedIn,isAuthenticated,getAl
 
 //retrive running appoinments list
 router.get('/user/:userId/running_appointments',isSignedIn,isAuthenticated,getRunningAppointments);
-
+router.get('/user/:userId/running_appointments/:appointmentId',isSignedIn,isAuthenticated,getPerticularAppointment,seePerticularAppointment)
 
 //save appointment to history
 

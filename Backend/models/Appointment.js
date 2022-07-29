@@ -36,7 +36,7 @@ const Appoinment_Schema = mongoose.Schema({
     Appointment_Status:{
         type: String,
       default: "Pending",
-      enum: ["Pending","Successfull","Running","Rejected"]
+      enum: ["Pending","Successfull","Running","Rejected","Canceled"]
         
     }
 

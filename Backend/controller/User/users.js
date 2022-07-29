@@ -34,12 +34,17 @@ const getHospitalById = (req,res,next,id) => {
 }
 
 
+
+
 const getHospital = (req,res) => {
     req.hospital.salt = undefined;
     req.hospital.encry_password = undefined;
     req.hospital.updatedAt = undefined;
     return res.json(req.hospital);
 }
+
+
+
 
 
 //get user details by ID
@@ -65,6 +70,9 @@ const getUserById = (req, res, next, id) => {
 }
 
 
+
+
+
 //sending request from user to hospital for appointment
 const sendAppointment = (req,res) => {
     const {Patient_Name,Patient_Disease,Patient_Contact} = req.body;
@@ -74,8 +82,6 @@ const sendAppointment = (req,res) => {
             error:"All Fields are Required!"
         })
     }
-    // console.log(req.auth._id,req.hospital._id);
-    // return res.status(200).json({msg:"check"})
     
     const appointment = new Appointment({
         hospital_id:req.hospital._id,
@@ -88,44 +94,12 @@ const sendAppointment = (req,res) => {
         Patient_Contact
     });
 
-    // const prev_appointment = req.hospital.Appointments_Pending;
 
-
-    // adding appointment to Hospital db
-    // Hospital.findByIdAndUpdate(
-    //     {_id:req.hospital._id},
-    //     {$set:{Appointments_Pending:[...prev_appointment,appointment]}},
-    //     (err,appointments) => {
-
-    //         if(err || !appointments){
-    //             return res.status(400).json({
-    //                 error:"Cannot Able to add Appointments in HospitalDB"
-    //             });
-    //         }
-    //     }   
-    // )
-
-//     //adding data to users db
-//    User.findByIdAndUpdate(
-//         {_id:req.auth._id},
-//         {$set:{Appointments_Pending:[...prev_appointment,appointment]}},
-//         (err,appointments) => {
-
-//             if(err){
-//                 console.log(err,appointments);
-//                 return res.status(400).json({
-//                     error:"Cannot Able to add Appointments in UserDB"
-//                 });
-//             }
-
-//             res.status(200).json(appointments);
-//         }   
-//     )
 
     appointment.save((err,Appointment) => {
         if(err || !Appointment){
             return res.status(400).json({
-                error:"Something went Wrong"
+                error:"Problem With Saving data in Appointment"
             });
         }
 
@@ -146,6 +120,15 @@ const getRunningAppointments = (req,res) => {
         }
         res.status(200).json(appointment);
     })
+}
+
+const seePerticularAppointment = (req,res) => {
+    if(req.appointment.user_id != req.auth._id){
+        return res.status(400).json({
+            error:"Invalid Appointments"
+        });
+    }
+    res.status(200).json(req.appointment);
 }
 
 //move to History with Success
@@ -224,4 +207,4 @@ const getAllAppointmentsUsers = (req,res) => {
 
 
 
-module.exports = {getAllHospitals,getHospitalById,getHospital,sendAppointment,getUser,getUserById,MoveToHistory,getAllAppointmentsUsers,getRunningAppointments};
+module.exports = {getAllHospitals,getHospitalById,getHospital,sendAppointment,getUser,getUserById,MoveToHistory,getAllAppointmentsUsers,getRunningAppointments,seePerticularAppointment};

@@ -18,9 +18,8 @@ exports.getHospitalById = (req, res, next, id) => {
 //get a perticular appointment
 exports.getPerticularAppointment = (req, res, next, id) => {
   Appointment.findById(id).exec((err, appointment) => {
-    // console.log(appointment);
     if (err) {
-      res.status(400).json({
+      return res.status(400).json({
         error: "Appointment not found",
       });
     }
@@ -31,14 +30,13 @@ exports.getPerticularAppointment = (req, res, next, id) => {
 
 //see a perticular appointment
 exports.getAppointmentDetails = (req, res) => {
-  // console.log(req.appointment);
   return res.json(req.appointment);
 };
 
 //getting all appointments pending phase
 exports.getPendingAppointments = (req, res) => {
   Appointment.find(
-    { hospital_id: { $in: req.auth._id } },
+    { hospital_id: { $in: req.auth._id },Appointment_Status:"Pending"},
     (err, appointment) => {
       if (err || !appointment) {
         return res.status(400).json({
@@ -51,20 +49,100 @@ exports.getPendingAppointments = (req, res) => {
 };
 
 
+//get all Running Appointments
+
+exports.getRunningAppointments = (req, res) => {
+  Appointment.find(
+    { hospital_id: { $in: req.auth._id },Appointment_Status:"Running" },
+    (err, appointment) => {
+      if (err || !appointment) {
+        return res.status(400).json({
+          error: "No Data found",
+        });
+      }
+      res.status(200).json(appointment);
+    }
+  );
+};
 
 //Changing status of appointment to running
-exports.ChangeAppointmentToRunning = (req, res) => {
+exports.ChangeAppointmentStatus = (req, res) => {
 
-Appointment.findByIdAndUpdate(req.appointment._id,{Appointment_Status:"Running"},(err,appointment) => {
+  const {status} = req.body;
+
+  if(status == "accepted"){
+
+    Appointment.findByIdAndUpdate(req.appointment._id,{Appointment_Status:"Running"},(err,appointment) => {
     if(err){
         return res.status(400).json({
             error:"Error While Updating Status"
         });
     }
 
-
     res.status(200).json({msg:"Updated Successfully"})
 
 })
+
+  }else{
+  
+    Appointment.findOneAndUpdate({_id:req.appointment._id,hospital_id:req.auth._id},{$set:{Appointment_Status:"Rejected"}}).exec((err,hospital) => {
+      if(err || !hospital){
+          return res.status(400).json({
+              error:"After Rejecting Data getting Problem"
+          })
+      }   
+
+      const {Hospital_Name,Hospital_Contact,Hospital_Address,Patient_Name,Patient_Contact,Patient_Disease,user_id} = hospital;
+      let HistoryAppointment = {
+          Hospital_Name,
+          Hospital_Contact,
+          Hospital_Address,
+          Appointment_Status:"Rejected",
+          Date: new Date(Date.now()).toString()
+      }
+
+      let HistoryAppointment_hospital = {
+          Patient_Name,
+          Patient_Contact,
+          Patient_Disease,
+          Appointment_Status:"Rejected",
+          Date: new Date(Date.now()).toString()
+      }
+
+      Hospital.findByIdAndUpdate(hospital.hospital_id,{$push:{Appointments_history:HistoryAppointment_hospital}}).exec((err,data) => {
+          if(err || !data){
+              return res.status(400).json({
+                  error:"Your Data is Not Saving on History Hospital"
+              })
+          }
+      })
+
+      // console.log(user_id);
+      User.findOneAndUpdate({_id:user_id},{$push:{Appointments_history:HistoryAppointment}}).exec((err,data) => {  
+        if(err || !data){
+                return res.status(400).json({
+                  error:"Your Data is Not Saving on History Users"
+              })
+          }
+      })
+
+  })
+
+ 
+  Appointment.findOneAndDelete({_id:req.appointment._id,hospital_id:req.auth._id}).exec((err,data) => {
+      if(err || !data){
+          return res.status(400).json({
+              error:"Your Data not deleted from Appointment"
+          })
+      }
+
+      res.status(200).json({
+          msg:"Your Data Deleted Successfully"
+      })
+  });
+
+  }
+
+
 
 };
