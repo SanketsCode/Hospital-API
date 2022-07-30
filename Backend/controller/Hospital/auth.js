@@ -13,12 +13,12 @@ const Hospital_SignUp = (req,res) => {
     if(!errors.isEmpty()){
         return  res.status(400).json({error:errors.array()[0].msg});
     }
-
+    
     const hospital = new Hospital(req.body);
     hospital.save((err,hospital) => {
         if(err){
             return res.status(400).json({
-                error:"Problem to Save in DB"
+                error:"Please fill all fields or Email Already Exists"
             });
         }
 

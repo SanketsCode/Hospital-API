@@ -9,7 +9,8 @@ let hospitalSchema = new mongoose.Schema({
     },
     email:{
         type:String,
-        required:true
+        required:true,
+        unique: true
     },
     encry_password: {
         type: String,
@@ -23,15 +24,15 @@ let hospitalSchema = new mongoose.Schema({
     address:{
         type:String,
         required:true
+      },
+    district: {
+      type:String,
+      required:true
     },
-    Appointments_Pending:{
-      type:Array,
-      default:[]
-  },
-  Appointments_Running:{
-    type:Array,
-    default:[]
-  },
+    state:{
+      type:String,
+      required:true
+    },
   Appointments_history:{
     type:Array,
     default:[]

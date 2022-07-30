@@ -3,6 +3,7 @@ Note - User data is not gone save/edit in hospital api because user_id and hospi
 //Done
 1. Need to work on hospital post request so that we can accept a status from that status decide appointment is rejected or accepted - Done
 3. Error While getting just pedding appointments - Done
+7. profile editing update api for user/hospital - Done
 
 
 //remaining
@@ -10,7 +11,8 @@ Note - User data is not gone save/edit in hospital api because user_id and hospi
 4. forgot password feature in User/hospital
 5. email varification both of them
 6. Hospital adding images while registration
-7. profile editing update api for user/hospital
+8. Sort the hospital with its district and taluka
+
 
 
 

@@ -151,14 +151,25 @@ exports.ChangeAppointmentStatus = (req, res) => {
 exports.updateHospitalProfile = (req,res) => {
   // task 1
   // retrive all values 
-
+  const {name,contact_no,address,Images} = req.body;
 
   //task 2
-  //get all updated values
+  //check all updated values
+  if(!name || !contact_no || !address){
+    return res.status(400).json({ error: "Need All Required Fields" });
+  }
+
+  let newImages = !Images ? [] : Images;
 
 
   //task 3
   //save updated values
 
+  Hospital.findOneAndUpdate({_id:req.auth._id},{name,contact_no,address,Images : newImages},{new:true}).exec((err,hospital) => {
+    if(err || !hospital){
+        return res.status(400).json({ error: "Updating Hospital is Failed" });
+    }
+    res.status(200).json(hospital);
+})
   
 }

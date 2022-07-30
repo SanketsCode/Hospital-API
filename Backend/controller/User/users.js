@@ -18,6 +18,34 @@ const getAllHospitals = async (req,res) => {
     res.status(200).json(secure_hospitals);
 }
 
+
+//get hospital by district
+const getHospitalsByDists = async (req,res,next,dist) => {
+    let hospitals = await Hospital.find({});
+    let SortedHospitals = [];
+    hospitals.forEach(hospital => {
+        const {name,email,contact_no,address,Images,_id,district,state} = hospital;
+
+        if(district.toLowerCase() === dist.toLowerCase()){
+            SortedHospitals.push({name,email,contact_no,address,Images,_id,district,state});
+        }   
+        
+    })
+    if(!SortedHospitals || SortedHospitals.length === 0){
+        return res.status(200).json({
+            error:"No Hospital found!"
+        })
+    }
+    req.sortedHospitals = SortedHospitals;
+    next();
+}
+
+//show hospitals
+const seeHospitalByDist = (req,res) => {
+    res.status(200).json(req.sortedHospitals);
+}
+
+
 //get a perticular hospital details
 const getHospitalById = (req,res,next,id) => {
     Hospital.findById(id)
@@ -203,6 +231,8 @@ const getAllAppointmentsUsers = (req,res) => {
 }
 
 
+
+
 //updating profile
 
 const updateUserProfile = (req,res) => {
@@ -230,4 +260,4 @@ const updateUserProfile = (req,res) => {
 
 
 
-module.exports = {getAllHospitals,getHospitalById,getHospital,sendAppointment,getUser,getUserById,MoveToHistory,getAllAppointmentsUsers,getRunningAppointments,seePerticularAppointment,updateUserProfile};
+module.exports = {getAllHospitals,getHospitalById,getHospital,sendAppointment,getUser,getUserById,MoveToHistory,getAllAppointmentsUsers,getRunningAppointments,seePerticularAppointment,updateUserProfile,getHospitalsByDists,seeHospitalByDist};
