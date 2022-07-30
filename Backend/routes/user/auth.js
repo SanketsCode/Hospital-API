@@ -1,5 +1,5 @@
 const express = require('express');
-const { signUp, signIn,signout} = require('../../controller/User/user_auth');
+const { signUp, signIn,signout, ValidateEmail} = require('../../controller/User/user_auth');
 const router = express.Router();
 const {check} = require('express-validator');
 
@@ -15,5 +15,6 @@ router.post('/user/auth/signin',[
 ],signIn);
 
 router.get('/auth/signout',signout);
+router.get('/user/verify/:id/:token',ValidateEmail);
 
 module.exports = router;

@@ -2,29 +2,82 @@ const {validationResult} = require('express-validator');
 const jwt = require('jsonwebtoken');
 const User = require('../../models/user');
 const {expressjwt:expressJwt} = require('express-jwt');
+const Token = require('../../models/token');
+const sendEmail = require('./varify_Email');
+const crypto = require('crypto');
 
 
-const signUp = (req,res) => {
+const signUp = async (req,res) => {
 
+   try{
     const errors = validationResult(req);
 
     if(!errors.isEmpty()){
         return  res.status(400).json({error:errors.array()[0].msg});
     }
 
-    const user = new User(req.body);
+    let user = new User(req.body);
     user.save((err,user) => { 
         if(err){
             return res.status(400).json({
-                error:"Invalid data Please fill Again"
+                error:"Invalid data or Check Email Already Exists!"
             });
         }
-        res.json({
-            name:user.name,
-            email:user.email,
-            id:user._id
-        });
+        
+        user = user;
+        //   res.status(200).json({
+        //     name:user.name,
+        //     email:user.email,
+        //     id:user._id,
+        //     msg:"An Email sent to your account please verify"
+        // });
     })
+
+    let token = await new Token({
+        userId: user._id,
+        token: crypto.randomBytes(32).toString("hex"),
+      }).save();
+  
+      const message = `${process.env.BASE_URL}/user/verify/${user.id}/${token.token}`;
+      const result = await sendEmail(user.email, "Verify Email", message);
+
+      if(result){
+          res.status(200).json({
+            msg:"Email Send Successfully Check Your mail"
+          })
+      }else{
+        res.status(400).json({
+            msg:"Email Unsuccessfull Try after some time!"
+          })
+      }
+
+
+   }catch(err){
+    console.log(err);
+    res.status(400).send("An error occured");
+   }
+}
+
+const ValidateEmail = async (req,res) => {
+    try {
+        const user = await User.findOne({ _id: req.params.id });
+        if (!user) return res.status(400).send("Invalid link");
+    
+        const token = await Token.findOne({
+          userId: user._id,
+          token: req.params.token,
+        });
+        if (!token) return res.status(400).send("Invalid link");
+    
+        await User.updateOne({ _id: user._id, verified: true });
+        await Token.findByIdAndRemove(token._id);
+    
+        res.status(200).json({
+            msg:"Email Verified Successfully"
+        });
+      } catch (error) {
+        res.status(400).send("An error occured Please try After some time");
+      }
 }
 
 const signIn = (req,res) => {
@@ -46,6 +99,12 @@ const signIn = (req,res) => {
         if(!user.autheticate(password)){
             return res.status(401).json({
                 error:"Email and Password do not match"
+            })
+        }
+
+        if(!user.varified){
+            return res.status(401).json({
+                error:"Confirm Email Varification"
             })
         }
 
@@ -99,4 +158,4 @@ const isAdmin = (req,res,next) => {
 
 
 
-module.exports = {signout,signUp,signIn,isSignedIn,isAuthenticated,isAdmin}
+module.exports = {signout,signUp,signIn,isSignedIn,isAuthenticated,isAdmin,ValidateEmail};
