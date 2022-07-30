@@ -29,14 +29,6 @@ let userSchema = new mongoose.Schema({
       required:false
     },
     salt: String,
-    Appointments_Pending:{
-      type:Array,
-      default:[]
-  },
-  Appointments_Running:{
-    type:Array,
-    default:[]
-  },
   Appointments_history:{
     type:Array,
     default:[]

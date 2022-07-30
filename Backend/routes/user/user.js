@@ -1,6 +1,6 @@
 const express = require('express');
 const { getPerticularAppointment } = require('../../controller/Hospital/hospital');
-const { getUserById, getAllHospitals, getHospitalById, sendAppointment, getHospital,getUser, getAllAppointmentsUsers, getRunningAppointments, MoveToHistory, seePerticularAppointment } = require('../../controller/User/users');
+const { getUserById, getAllHospitals, getHospitalById, sendAppointment, getHospital,getUser, getAllAppointmentsUsers, getRunningAppointments, MoveToHistory, seePerticularAppointment, updateUserProfile } = require('../../controller/User/users');
 const { isAuthenticated,isSignedIn } = require('../../controller/User/user_auth');
 const router = express.Router();
 
@@ -37,6 +37,9 @@ router.get ('/users/:userId',isSignedIn,isAuthenticated,getUser);
 
 //sending appointments
 router.post('/hospitals/:hospitalId',isSignedIn,isAuthenticated,sendAppointment);
+
+//updating profile
+router.put('/users/:userId/profile',isSignedIn,isAuthenticated,updateUserProfile);
 
 
 module.exports = router;

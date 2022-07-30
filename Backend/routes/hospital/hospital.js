@@ -11,7 +11,12 @@ router.param('appointmentId',getPerticularAppointment);
 //creating route for getting all data
 router.get('/pending_appointments',isHospitalSignedIn,isHospitalAuthenticated,getPendingAppointments);
 router.get('/pending_appointments/:appointmentId',isHospitalSignedIn,isHospitalAuthenticated,getAppointmentDetails);
-router.post('/pending_appointments/:appointmentId/status',isHospitalSignedIn,isHospitalAuthenticated,ChangeAppointmentStatus);
 router.get('/running_appointments',isHospitalSignedIn,isHospitalAuthenticated,getRunningAppointments);
+
+
+//changing status while getting data ( accepted or decline )
+router.post('/pending_appointments/:appointmentId/status',isHospitalSignedIn,isHospitalAuthenticated,ChangeAppointmentStatus);
+
+
 
 module.exports = router;

@@ -146,3 +146,19 @@ exports.ChangeAppointmentStatus = (req, res) => {
 
 
 };
+
+
+exports.updateHospitalProfile = (req,res) => {
+  // task 1
+  // retrive all values 
+
+
+  //task 2
+  //get all updated values
+
+
+  //task 3
+  //save updated values
+
+  
+}

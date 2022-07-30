@@ -203,8 +203,31 @@ const getAllAppointmentsUsers = (req,res) => {
 }
 
 
+//updating profile
+
+const updateUserProfile = (req,res) => {
+    // task 1
+    // retrive all values 
+    const {name,Phone_no,Profile_photo} = req.body;
+
+    //task 2
+    //get all updated values
+    if(!name || !Phone_no){
+        return res.status(400).json({ error: "Need All Required Fields" });
+    }
+
+    //task 3
+    //save updated values
+    User.findOneAndUpdate({_id:req.profile._id},{name,Phone_no,Profile_photo},{new:true}).exec((err,user) => {
+        if(err || !user){
+            return res.status(400).json({ error: "Updating User is Failed" });
+        }
+        res.status(200).json(user);
+    })
+
+    
+}
 
 
 
-
-module.exports = {getAllHospitals,getHospitalById,getHospital,sendAppointment,getUser,getUserById,MoveToHistory,getAllAppointmentsUsers,getRunningAppointments,seePerticularAppointment};
+module.exports = {getAllHospitals,getHospitalById,getHospital,sendAppointment,getUser,getUserById,MoveToHistory,getAllAppointmentsUsers,getRunningAppointments,seePerticularAppointment,updateUserProfile};
