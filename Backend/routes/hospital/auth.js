@@ -1,7 +1,7 @@
 
 const express = require('express');
 const {check} = require('express-validator');
-const { Hospital_SignIn, Hospital_SignUp } = require('../../controller/Hospital/auth');
+const { Hospital_SignIn, Hospital_SignUp, ValidateEmail } = require('../../controller/Hospital/auth');
 const router = express.Router();
 
 
@@ -18,5 +18,7 @@ router.post('/hospital/auth/signin',[
     check("email","email is required").isEmail(),
     check("password","password is required").isLength({min:1})
 ],Hospital_SignIn);
+
+router.get('/hospital/verify/:id/:token',ValidateEmail);
 
 module.exports = router;

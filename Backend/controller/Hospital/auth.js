@@ -3,33 +3,76 @@ const {validationResult} = require('express-validator');
 const jwt = require('jsonwebtoken');
 const Hospital = require('../../models/hospital');
 const {expressjwt:expressJwt} = require('express-jwt');
+const Token = require('../../models/token');
+const crypto = require('crypto');
+const sendEmail = require('../Email_Varification/email_varify');
 
 
 
 //sign up controller for hospital
-const Hospital_SignUp = (req,res) => {
+const Hospital_SignUp = async (req,res) => {
+   try{
     const errors = validationResult(req);
 
     if(!errors.isEmpty()){
         return  res.status(400).json({error:errors.array()[0].msg});
     }
     
-    const hospital = new Hospital(req.body);
+    let hospital = new Hospital(req.body);
     hospital.save((err,hospital) => {
-        if(err){
+        if(err || !hospital){
             return res.status(400).json({
                 error:"Please fill all fields or Email Already Exists"
             });
         }
+        hospital = hospital;
+    });
 
-        res.json({
-            name:hospital.name,
-            email:hospital.email,
-            address:hospital.address
-        });
-    })
+    let token = await new Token({
+        userId: hospital._id,
+        token: crypto.randomBytes(32).toString("hex"),
+      }).save();
+  
+      const message = `Hello ${hospital.name} \n Please Use these varification Link \n ${process.env.BASE_URL}/hospital/verify/${hospital.id}/${token.token}`;
+      const result = await sendEmail(hospital.email, "Verify Email", message);
+
+      if(result){
+          return res.status(200).json({
+            msg:"Email Send Successfully Check Your mail"
+          })
+      }else{
+        return res.status(400).json({
+            msg:"Email Unsuccessfull Try after some time!"
+          })
+      }
+   }catch(err){
+    console.log(err);
+    return res.status(400).send("An error occured");
+   }
 }
 
+const ValidateEmail = async (req,res) => {
+    try {
+        const hospital = await Hospital.findOne({ _id: req.params.id });
+        if (!hospital) return res.status(400).send("Invalid link");
+    
+        const token = await Token.findOne({
+          userId: hospital._id,
+          token: req.params.token,
+        });
+        if (!token) return res.status(400).send("Invalid link");
+    
+        await hospital.updateOne({verified: true });
+        await Token.findByIdAndRemove(token._id);
+    
+        res.status(200).json({
+            msg:"Email Verified Successfully"
+        });
+      } catch (error) {
+        console.log(error);
+        res.status(400).send("An error occured Please try After some time");
+      }
+}
 
 //hospital
 const Hospital_SignIn = (req,res) => {
@@ -52,6 +95,12 @@ const Hospital_SignIn = (req,res) => {
             return res.status(401).json({
                 error:"Email and Password do not match"
             });
+        }
+        
+        if(!hospital.verified){
+            return res.status(401).json({
+                error:"Confirm Email Varification"
+            })
         }
 
         //create token
@@ -93,4 +142,4 @@ const isHospitalAuthenticated = (req,res,next) => {
 }
 
 
-module.exports = {isHospitalAuthenticated,isHospitalSignedIn,Hospital_SignIn,Hospital_SignUp,getHospital};
+module.exports = {isHospitalAuthenticated,isHospitalSignedIn,Hospital_SignIn,Hospital_SignUp,getHospital,ValidateEmail};

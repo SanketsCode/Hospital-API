@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../../models/user');
 const {expressjwt:expressJwt} = require('express-jwt');
 const Token = require('../../models/token');
-const sendEmail = require('./varify_Email');
+const sendEmail = require('../Email_Varification/email_varify');
 const crypto = require('crypto');
 
 
@@ -25,12 +25,6 @@ const signUp = async (req,res) => {
         }
         
         user = user;
-        //   res.status(200).json({
-        //     name:user.name,
-        //     email:user.email,
-        //     id:user._id,
-        //     msg:"An Email sent to your account please verify"
-        // });
     })
 
     let token = await new Token({
@@ -38,7 +32,7 @@ const signUp = async (req,res) => {
         token: crypto.randomBytes(32).toString("hex"),
       }).save();
   
-      const message = `${process.env.BASE_URL}/user/verify/${user.id}/${token.token}`;
+      const message = `Hello User \n Please Use these varification Link \n ${process.env.BASE_URL}/user/verify/${user.id}/${token.token}`;
       const result = await sendEmail(user.email, "Verify Email", message);
 
       if(result){
@@ -101,8 +95,7 @@ const signIn = (req,res) => {
                 error:"Email and Password do not match"
             })
         }
-
-        if(!user.varified){
+        if(!user.verified){
             return res.status(401).json({
                 error:"Confirm Email Varification"
             })
