@@ -173,3 +173,51 @@ exports.updateHospitalProfile = (req,res) => {
 })
   
 }
+
+
+//forgot password
+exports.forgot_password = (req,res) => {
+
+  let {password} = req.body;
+  // console.log(password);
+
+  function EncryptPass(plainpassword,salt) {
+    // console.log(plainpassword,salt);
+    if (!plainpassword) return "";
+    try {
+      return crypto
+        .createHmac("sha256", salt)
+        .update(plainpassword)
+        .digest("hex");
+    } catch (err) {
+      return "";
+    }
+  }
+
+  let pass = EncryptPass(password,req.hospital.salt);
+
+ 
+  let hospital_id = req.hospital._id;
+
+  if(!hospital_id){
+    return res.status(400).json({
+      error : "Password Not updated"
+    });
+  }
+
+  //update with Encrypt password
+  Hospital.findOneAndUpdate({_id:hospital_id},{$set:{encry_password:pass}}).exec((err,data) => {
+    if(err || !data) {
+      return res.status(400).json({
+        error : "Password Not updated"
+      });
+    }
+
+    res.status(200).json({
+      msg : "Password updated Successfully"
+    });
+  
+
+  })
+
+}
