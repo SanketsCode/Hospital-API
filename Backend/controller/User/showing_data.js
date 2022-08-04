@@ -96,7 +96,7 @@ exports.seePerticularAppointment = (req,res) => {
 
 //get all appointments in details
 exports.getAllAppointmentsUsers = (req,res) => {
-   Appointment.find({user_id:{$in:req.profile._id},},(err,appointment) =>{ 
+   Appointment.find({user_id:{$in:req.profile._id},Appointment_Status:"Pending",},(err,appointment) =>{ 
         if(err ||  !appointment){
             return res.status(400).json({
                 error : "No Data found"

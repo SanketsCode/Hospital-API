@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../../models/user');
 const {expressjwt:expressJwt} = require('express-jwt');
 const Token = require('../../models/token');
-const sendEmail = require('../Email_Varification/email_varify');
+const sendEmail = require('../Email_Varification/email_verify');
 const crypto = require('crypto');
 
 
@@ -16,34 +16,50 @@ const signUp = async (req,res) => {
         return  res.status(400).json({error:errors.array()[0].msg});
     }
 
+    //Different Condition for valid fields
+    const {name,email,password,Phone_no} = req.body
+    if(!Phone_no || !name || !email || !password){
+        return res.status(400).json({
+            error:"Make Shure You enter all fields"
+        })
+    }
+
     let user = new User(req.body);
-    user.save((err,user) => { 
-        if(err){
-            return res.status(400).json({
-                error:"Invalid data or Check Email Already Exists!"
-            });
-        }
-        
-        user = user;
-    })
+
+    // console.log(user);
 
     let token = await new Token({
         userId: user._id,
         token: crypto.randomBytes(32).toString("hex"),
       }).save();
+
+    
+
+    // res.status(200).json({msg:"working"})
   
       const message = `Hello User \n Please Use these varification Link \n ${process.env.BASE_URL}/user/verify/${user.id}/${token.token}`;
       const result = await sendEmail(user.email, "Verify Email", message);
 
       if(result){
-          res.status(200).json({
-            msg:"Email Send Successfully Check Your mail"
-          })
+        user.save((err,user) => {
+            // console.log(err,user); 
+            if(err || !user){
+                return res.status(400).json({
+                    error:"Email Already Exists!"
+                });
+            }
+            return res.status(200).json({
+                msg:"Email Send Successfully Check Your mail"
+              })
+        })
+         
       }else{
         res.status(400).json({
             msg:"Email Unsuccessfull Try after some time!"
           })
       }
+
+     
 
 
    }catch(err){
@@ -63,13 +79,14 @@ const ValidateEmail = async (req,res) => {
         });
         if (!token) return res.status(400).send("Invalid link");
     
-        await User.updateOne({ _id: user._id, verified: true });
+        await User.findByIdAndUpdate({ _id: user._id},{$set : {verified: true } });
         await Token.findByIdAndRemove(token._id);
     
         res.status(200).json({
             msg:"Email Verified Successfully"
         });
       } catch (error) {
+        console.log(error);
         res.status(400).send("An error occured Please try After some time");
       }
 }
@@ -140,15 +157,15 @@ const isAuthenticated = (req,res,next) => {
 
 //No admin required
 
-const isAdmin = (req,res,next) => {
-    if(req.profile.role ===  0){
-        return res.status(403).json({
-            error :"You are not Admin, Access denide"
-        })
-    }
-    next();
-}
+// const isAdmin = (req,res,next) => {
+//     if(req.profile.role ===  0){
+//         return res.status(403).json({
+//             error :"You are not Admin, Access denide"
+//         })
+//     }
+//     next();
+// }
 
 
 
-module.exports = {signout,signUp,signIn,isSignedIn,isAuthenticated,isAdmin,ValidateEmail};
+module.exports = {signout,signUp,signIn,isSignedIn,isAuthenticated,ValidateEmail};

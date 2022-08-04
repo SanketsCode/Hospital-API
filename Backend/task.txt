@@ -6,15 +6,31 @@ Note - User data is not gone save/edit in hospital api because user_id and hospi
 7. profile editing update api for user/hospital - Done
 5. email varification both of them - Done
 8. Sort the hospital with its district and taluka - Done
+2. User can cancel appointment in running state it will go to canceled phase. -Done
+4. forgot password feature in User/hospital -Done
 
 
 //remaining
-2. User can cancel appointment in running state it will go to canceled phase.
-4. forgot password feature in User/hospital
-6. Hospital adding images while registration
-9. Testing all api routes 
+6. Hospital adding images while registration 
 10. adding time slot for user
-11. update code for cleaness
+11. update code for cleaness 
+12. put hospital email and user email in appointment section
+
+9. Testing all api routes 
+
+- Sign up user ( Done )
+- Verify Email ( Done )
+- Sign In with Email not varified ( Done )
+- get hosital details ( Done )
+- removing appointment in Pending/Running state ( Done )
+- hospital signIn ( Done )
+- Hospital data fetching pending appointment ( Done )
+- Change Pending appointment status ( Done )
+- User can see Pending and Running Appointments ( Done )
+- all user routes (Done)
+
+
+
 
 
 

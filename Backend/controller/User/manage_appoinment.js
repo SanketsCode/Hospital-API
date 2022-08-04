@@ -111,7 +111,12 @@ exports.MoveToHistory = (req,res) => {
 
 //Move to History with Reject
 exports.MoveToHistoryByRemove = (req,res) => {
-    Appointment.findOneAndUpdate({_id:req.appointment._id,user_id:req.auth._id},{$set:{Appointment_Status:"Successfull"}}).exec((err,hospital) => {
+    // console.log(req.appointment.user_id,String(req.profile._id));
+    if(req.appointment.user_id !== String(req.profile._id)){
+        return res.status(400).json({error:"You are an Invalid Person"})
+    }
+
+    Appointment.findOneAndUpdate({_id:req.appointment._id,user_id:req.auth._id},{$set:{Appointment_Status:"Rejected"}}).exec((err,hospital) => {
         if(err || !hospital){
             return res.status(400).json({
                 error:"Not getting Appointment Data in MoveToHistory"
@@ -157,6 +162,7 @@ exports.MoveToHistoryByRemove = (req,res) => {
 
     })
 
+    
     Appointment.findOneAndDelete({_id:req.appointment._id,user_id:req.auth._id}).exec((err,data) => {
         if(err || !data){
             return res.status(400).json({

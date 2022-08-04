@@ -17,9 +17,11 @@ exports.getHospitalById = (req, res, next, id) => {
 
 //get a perticular appointment
 exports.getPerticularAppointment = (req, res, next, id) => {
+  // console.log(id);
   Appointment.findById(id).exec((err, appointment) => {
-    if (err) {
-      return res.status(400).json({
+    if (err || !appointment) {
+      console.log(err);
+        return res.status(400).json({
         error: "Appointment not found",
       });
     }

@@ -5,7 +5,7 @@ const Hospital = require('../../models/hospital');
 const {expressjwt:expressJwt} = require('express-jwt');
 const Token = require('../../models/token');
 const crypto = require('crypto');
-const sendEmail = require('../Email_Varification/email_varify');
+const sendEmail = require('../Email_Varification/email_verify');
 
 
 
