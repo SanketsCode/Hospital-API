@@ -17,26 +17,34 @@ const Hospital_SignUp = async (req,res) => {
     if(!errors.isEmpty()){
         return  res.status(400).json({error:errors.array()[0].msg});
     }
+
+    const {name,email,contact_no,address,password,district,state} = req.body;
+
+    if(!name || !email || !contact_no || !address || !password || !district || !state ){
+        return res.status(400).json({
+            error:"Please fill all fields"
+        });
+    }
     
     let hospital = new Hospital(req.body);
-    hospital.save((err,hospital) => {
-        if(err || !hospital){
-            return res.status(400).json({
-                error:"Please fill all fields or Email Already Exists"
-            });
-        }
-        hospital = hospital;
-    });
-
+    
     let token = await new Token({
         userId: hospital._id,
         token: crypto.randomBytes(32).toString("hex"),
       }).save();
-  
+
       const message = `Hello ${hospital.name} \n Please Use these varification Link \n ${process.env.BASE_URL}/hospital/verify/${hospital.id}/${token.token}`;
       const result = await sendEmail(hospital.email, "Verify Email", message);
 
       if(result){
+        hospital.save((err,hospital) => {
+            if(err || !hospital){
+                return res.status(400).json({
+                    error:"Email Already Exists"
+                });
+            }
+            hospital = hospital;
+        });
           return res.status(200).json({
             msg:"Email Send Successfully Check Your mail"
           })
@@ -45,6 +53,8 @@ const Hospital_SignUp = async (req,res) => {
             msg:"Email Unsuccessfull Try after some time!"
           })
       }
+
+     
    }catch(err){
     console.log(err);
     return res.status(400).send("An error occured");

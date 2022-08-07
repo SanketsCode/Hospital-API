@@ -15,9 +15,12 @@ exports.sendAppointment = (req,res) => {
             error:"All Fields are Required!"
         })
     }
+
+
     
     const appointment = new Appointment({
         hospital_id:req.hospital._id,
+        hospital_email:req.hospital.email,
         Hospital_Name: req.hospital.name,
         Hospital_Contact:req.hospital.contact_no,
         Hospital_Address:req.hospital.address,

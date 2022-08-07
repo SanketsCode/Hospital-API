@@ -17,6 +17,10 @@ const Appoinment_Schema = mongoose.Schema({
         type:String,
         required:true
     },
+    hospital_email:{
+        type:String,
+        required:true
+    },
     user_id:{
         type:String,
         required:true
