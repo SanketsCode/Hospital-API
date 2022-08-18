@@ -7,32 +7,33 @@ import ActivityIndicator from '../components/ActivityIndicator';
 import { ErrorMessage, Form,FormField,SubmitButton } from '../components/Form';
 import Screen from '../components/Screen';
 import { Card } from 'react-native-paper';
+import AppText from '../components/AppText';
+import axios from 'axios';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
   password: Yup.string().max(255).required('Password is required')
 })
 
-export default function Login({navigation}) {
+export default function Login({navigation,route}) {
   const [loginFailed, setLoginFailed] = useState(false);
   const [loading,setLoading] = useState(false);
+  const [errorMsg,setErrorMsg] = useState(false);
 
   const auth = useAuth();
   const handleSubmit = async ({email,password}) => {
-    // try { 
-    //   setLoading(true);
-    //   const {user} = await Firebase.auth().signInWithEmailAndPassword(email,password);
-    //   setLoginFailed(false);
-    //   auth.logIn(user);
-    //   setLoading(false);
-    // } catch (error) {
-    //   console.log("Error While Login ",error);
-    //   setLoading(false);
-    //   return setLoginFailed(true); 
-    // }
-    // setLoading(false);
-      // return;
-      console.log("Test");
+    try {
+      const user = await axios.post('http://192.168.1.101:4000/api/user/auth/signin',{
+          email,
+          password
+      });
+      console.log(user.data);
+      auth.logIn(user.data);
+     } catch (error) {
+      setErrorMsg(true);
+      console.log(error);
+     }
   }
 
 
@@ -40,7 +41,13 @@ export default function Login({navigation}) {
     <>
     <ActivityIndicator visible={loading}/>
     <Screen style={styles.container}>
-  
+    { errorMsg && <View style={styles.msg}>
+
+      <AppText>Email Not Verified / Wrong Email</AppText>
+      <TouchableOpacity onPress={() => setErrorMsg(false)}>
+      <MaterialCommunityIcons name='close' size={20} />
+      </TouchableOpacity>
+    </View>}
    <Image 
      style={styles.logo}
      source={require("../assets/logo.png")}
@@ -102,5 +109,16 @@ export default function Login({navigation}) {
        redirect:{
          marginTop:10,
          marginBottom:10
+       },
+       msg:{
+        width:"95%",
+        height:"8%",
+        backgroundColor: "#FF6263",
+        display:"flex",
+        flexDirection:"row",
+        alignItems:"center",
+        justifyContent:"space-evenly",
+        borderRadius:10,
+        marginBottom:10,
        }
  })

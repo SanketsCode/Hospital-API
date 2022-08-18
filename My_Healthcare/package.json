@@ -20,6 +20,7 @@
     "expo-constants": "^13.2.3",
     "expo-image-picker": "^13.3.1",
     "expo-secure-store": "^11.3.0",
+    "expo-splash-screen": "^0.16.1",
     "expo-status-bar": "~1.4.0",
     "formik": "^2.2.9",
     "jwt-decode": "^3.1.2",

@@ -10,6 +10,7 @@ import Screen from '../components/Screen';
 import useApi from '../hooks/useApi';
 import authApi from "../api/auth";
 
+
 import axios from 'axios';
 
 const validationSchema = Yup.object().shape({
@@ -21,9 +22,7 @@ const validationSchema = Yup.object().shape({
 })
 
 
-export default function Register() {
-  const registerApi = useApi(authApi.register);
-  const loginApi = useApi(authApi.login);
+export default function Register({navigation}) {
   const auth = useAuth();
   const [error, setError] = useState();
 
@@ -31,15 +30,21 @@ export default function Register() {
     
    
  try {
-  const user = await axios.get('http://192.168.1.111:4000/api/hospitals');
-  console.log(user);
+  const user = await axios.post('http://192.168.1.101:4000/api/user/auth/signup',{
+      name:userInfo["name"],
+      password:userInfo["password"],
+      email:userInfo["email"],
+      Phone_no:userInfo["Phone_no"]
+  });
+  console.log(user.data);
+  navigation.navigate('Login',{
+    msg:user.data["msg"]
+  });
  } catch (error) {
   console.log(error);
  }
-
-
-
-  }
+  
+}
 
   return (
    <>

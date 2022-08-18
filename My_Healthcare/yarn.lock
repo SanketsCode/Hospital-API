@@ -3230,7 +3230,7 @@
   "resolved" "https://registry.npmjs.org/expo-secure-store/-/expo-secure-store-11.3.0.tgz"
   "version" "11.3.0"
 
-"expo-splash-screen@~0.16.0":
+"expo-splash-screen@^0.16.1", "expo-splash-screen@~0.16.0":
   "integrity" "sha512-R3EUV5OM4RO+tb5XHgx9TNjaKCpHULo2CrIPbfZGnIdef3MeQucg4dNGw+Kiub9oKGPeExQfwtWqW+VXZqa0vg=="
   "resolved" "https://registry.npmjs.org/expo-splash-screen/-/expo-splash-screen-0.16.1.tgz"
   "version" "0.16.1"
