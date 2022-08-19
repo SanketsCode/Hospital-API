@@ -27,10 +27,10 @@ export default function Register({navigation}) {
   const [error, setError] = useState();
 
   const HandleSubmit = async (userInfo) => {
-    
+      console.log(Constants.manifest.extra.API_URL);
    
  try {
-  const user = await axios.post('http://192.168.1.101:4000/api/user/auth/signup',{
+  const user = await axios.post(`${Constants.manifest.extra.API_URL}/user/auth/signup`,{
       name:userInfo["name"],
       password:userInfo["password"],
       email:userInfo["email"],

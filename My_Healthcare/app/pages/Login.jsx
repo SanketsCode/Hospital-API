@@ -10,6 +10,7 @@ import { Card } from 'react-native-paper';
 import AppText from '../components/AppText';
 import axios from 'axios';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import Constants  from 'expo-constants';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
@@ -23,8 +24,9 @@ export default function Login({navigation,route}) {
 
   const auth = useAuth();
   const handleSubmit = async ({email,password}) => {
+    console.log(Constants.manifest.extra.API_URL);
     try {
-      const user = await axios.post('http://192.168.1.101:4000/api/user/auth/signin',{
+      const user = await axios.post(`${Constants.manifest.extra.API_URL}/user/auth/signin`,{
           email,
           password
       });

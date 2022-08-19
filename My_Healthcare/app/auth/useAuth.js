@@ -15,6 +15,7 @@ export default useAuth = () => {
 
     const logIn = (user) => {
             authStorage.storeData(user);
+            setUser(user);
     }
 
     return {user,setUser,logout,logIn};
