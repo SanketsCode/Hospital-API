@@ -1,24 +1,27 @@
 const express = require('express');
-const { isHospitalSignedIn, isHospitalAuthenticated } = require('../../controller/Hospital/auth');
-const { getPendingAppointments, getHospitalById, getPerticularAppointment, getAppointmentDetails, getRunningAppointments, ChangeAppointmentStatus, updateHospitalProfile } = require('../../controller/Hospital/hospital');
-const router = express.Router();
+const { isHospitalSignedIn, isHospitalAuthenticated } = require('../../controllers/Hospital/auth');
+const { getHospitalById, getPerticularAppointment, getPendingAppointment, getAppointmentDetails, changeAppointmentStatus, getAllRunningAppointments, updateHospitalProfile, forgot_password } = require('../../controllers/Hospital/hospital');
+const Router = express.Router();
 
 //params
-router.param('hospitalId',getHospitalById);
-router.param('appointmentId',getPerticularAppointment);
+Router.param('hospitalId',getHospitalById);
+Router.param('appointmentId',getPerticularAppointment);
 
 
-//creating route for getting all data
-router.get('/pending_appointments',isHospitalSignedIn,isHospitalAuthenticated,getPendingAppointments);
-router.get('/pending_appointments/:appointmentId',isHospitalSignedIn,isHospitalAuthenticated,getAppointmentDetails);
-router.get('/running_appointments',isHospitalSignedIn,isHospitalAuthenticated,getRunningAppointments);
+
+//Creating routes for getting the data
+Router.get('/pending_appointments',isHospitalSignedIn,isHospitalAuthenticated,getPendingAppointment);
+Router.get('/pending_appointments/:appointmentId',isHospitalSignedIn,isHospitalAuthenticated,getAppointmentDetails);
+Router.get('/running_appointments',isHospitalSignedIn,isHospitalAuthenticated,getAllRunningAppointments);
 
 
-//changing status while getting data ( accepted or decline )
-router.post('/pending_appointments/:appointmentId/status',isHospitalSignedIn,isHospitalAuthenticated,ChangeAppointmentStatus);
-
-//updating hospital profile
-router.put('/profile',isHospitalSignedIn,isHospitalAuthenticated,updateHospitalProfile);
 
 
-module.exports = router;
+//Profile Edit 
+Router.put('/profile',isHospitalSignedIn,isHospitalAuthenticated,updateHospitalProfile);
+
+Router.post('/:hospitalId/forgot_password',isHospitalSignedIn,isHospitalAuthenticated,forgot_password);
+//changing the appointment status
+Router.post('/pending_appoinment/:appointmentId/status',isHospitalSignedIn,isHospitalAuthenticated,changeAppointmentStatus);
+
+module.exports = Router;

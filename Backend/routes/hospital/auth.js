@@ -1,24 +1,22 @@
-
 const express = require('express');
-const {check} = require('express-validator');
-const { Hospital_SignIn, Hospital_SignUp, ValidateEmail } = require('../../controller/Hospital/auth');
 const router = express.Router();
+const {check} = require('express-validator');
+const { Hospital_Signup,ValidationEmail,Hospital_SignIn } = require('../../controllers/Hospital/auth');
+const { signout } = require('../../controllers/User/user_auth');
 
 
-
-//hospital auth routes
 router.post('/hospital/auth/signup',[
-    check("name","name should be at least 3 Characters").isLength({min:6}),
-    check("email","email is required").isEmail(),
-    check("password","password should be at least 3 char").isLength({min:6})
-],Hospital_SignUp);
-
+    check('name',"Name Should be 3 Length Long").isLength({min:3}),
+    check('email',"Email is Required").isEmail(),
+    check('password',"Password Must be 3 Charater Long").isLength({min:3})
+],Hospital_Signup);
 
 router.post('/hospital/auth/signin',[
-    check("email","email is required").isEmail(),
-    check("password","password is required").isLength({min:1})
-],Hospital_SignIn);
+    check('email',"Email is Required").isEmail(),
+    check('password',"Password Must be 3 Charater Long").isLength({min:3}),
+],Hospital_SignIn)
 
-router.get('/hospital/verify/:id/:token',ValidateEmail);
+router.get('/auth/signout',signout);
+router.get('/hospital/verify/:id/:token',ValidationEmail);
 
 module.exports = router;

@@ -1,16 +1,12 @@
 const mongoose = require('mongoose');
 
-const Appoinment_Schema = mongoose.Schema({
+const Appointment_Schema = new mongoose.Schema({
     Hospital_Name:{
         type:String,
         required:true
     },
     Hospital_Contact:{
         type:Number,
-        required:true
-    },
-    Hospital_Address:{
-        type:String,
         required:true
     },
     hospital_id:{
@@ -38,12 +34,10 @@ const Appoinment_Schema = mongoose.Schema({
         required:true
     },
     Appointment_Status:{
-        type: String,
-      default: "Pending",
-      enum: ["Pending","Successfull","Running","Rejected","Canceled"]
-        
+        type:String,
+        default:"Pending",
+        enum:["Pending","Successfull","Running","Rejected","Canceled"]
     }
+})
 
-});
-
-module.exports = mongoose.model("Appointment", Appoinment_Schema);
+module.exports = mongoose.model("Appointment",Appointment_Schema);

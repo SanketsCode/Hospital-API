@@ -1,52 +1,47 @@
 const express = require('express')
 const app = express();
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const cors = require('cors');
-
+// .env file ke varible access
 require('dotenv/config');
 
-//routes
 
-//auth routes
-const authRouter = require('./routes/user/auth');
-const hospitalAuth = require('./routes/hospital/auth');
-
-//user routes
+//Routers Import
+const authRouter = require('./routes/user/auth')
+const HospitalAuth = require('./routes/hospital/auth');
 const userRouter = require('./routes/user/user');
-
-//hospital Routes
-const HospitalRouter = require('./routes/hospital/hospital');
+const HospitalRoutes = require('./routes/hospital/hospital');
 
 
-
-
-
-//middlewares
+//middleware
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(cors());
 
+
+
 //Routes
 app.use('/api',authRouter);
+app.use('/api',HospitalAuth);
 app.use('/api',userRouter);
-app.use('/api',hospitalAuth);
-app.use('/api',HospitalRouter);
+app.use('/api',HospitalRoutes);
+//Db ko connect Karo
 
-//db 
 mongoose.connect(process.env.DATABASE,{
     useNewUrlParser : true,
     useUnifiedTopology: true,
     dbName:'Hospital_Help'
 }).then(() => {
-    console.log("DB CONNECTED");
+    console.log("Database Connected");
 }).catch(err => {
     console.log(err);
-    console.log("DB FAILED");
-});
+    console.log("Database not connected");
+})
 
-
+//Server Build Kiya
 app.listen(process.env.PORT,() => {
-    console.log("Listening on PORT "+ process.env.PORT);
+    console.log("Listening to port ",process.env.PORT);
 })

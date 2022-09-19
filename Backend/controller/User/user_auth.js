@@ -6,7 +6,7 @@ const Token = require('../../models/token');
 const sendEmail = require('../Email_Varification/email_verify');
 const crypto = require('crypto');
 
-
+ 
 const signUp = async (req,res) => {
 
    try{

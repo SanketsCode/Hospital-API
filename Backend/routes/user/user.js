@@ -1,62 +1,49 @@
 const express = require('express');
-const { getPerticularAppointment, getAppointmentDetails } = require('../../controller/Hospital/hospital');
-const { MoveToHistory, MoveToHistoryByRemove, sendAppointment } = require('../../controller/User/manage_appoinment');
-const { getHospitalById, getHospitalsByDists, getAllHospitals, getHospital, seeHospitalByDist, getAllAppointmentsUsers, getRunningAppointments, seePerticularAppointment } = require('../../controller/User/showing_data');
-const { getUserById, forgot_password, getUser, updateUserProfile } = require('../../controller/User/users');
-const { isAuthenticated,isSignedIn } = require('../../controller/User/user_auth');
-const router = express.Router();
+const { getPerticularAppointment} = require('../../controllers/Hospital/hospital');
+const { getAllHospitals, getHospitalById, getHospital, sendAppointment, getAllAppointments, seePerticularAppoinment, getRunningAppointments, MoveToHistoryByRemove, MoveToHistory } = require('../../controllers/User/manage_appointments');
+const { getUserById, getUser, updateUserProfile, forgot_password } = require('../../controllers/User/users');
+const { isSignedIn, isAuthenticated } = require('../../controllers/User/user_auth');
+const Router = express.Router();
+
 
 //Params
-router.param("userId",getUserById);
-router.param("hospitalId",getHospitalById);
-router.param("appointmentId",getPerticularAppointment);
-router.param("dist",getHospitalsByDists);
-//Request
-
-//get hospitals 
-router.get('/hospitals',getAllHospitals);
-
-// specific hospital details
-router.get('/hospitals/:hospitalId',getHospital);
+Router.param("userId",getUserById)
+Router.param("hospitalId",getHospitalById);
+Router.param("appointmentId",getPerticularAppointment);
 
 
-//sorting appointments based on districts
-router.get('/hospitals/dist/:dist',seeHospitalByDist);
 
-//get pending appointment list
-router.get('/user/:userId/pending_appointments',isSignedIn,isAuthenticated,getAllAppointmentsUsers);
+//User Profile Routes
+Router.get('/users/:userId',isSignedIn,isAuthenticated,getUser);
+Router.put('/users/:userId/profile',isSignedIn,isAuthenticated,updateUserProfile);
+Router.put('/users/:userId/forgot_password',isSignedIn,isAuthenticated,forgot_password);
 
-//delete data in pending state by user
-router.get('/user/:userId/:appointmentId/remove',isSignedIn,isAuthenticated,MoveToHistoryByRemove);
+//NO Auth Required
+Router.get('/hospitals',getAllHospitals);
+Router.get('/hospitals/:hospitalId',getHospital);
 
-
-//retrive running appoinments list
-router.get('/user/:userId/running_appointments',isSignedIn,isAuthenticated,getRunningAppointments);
-router.get('/user/:userId/running_appointments/:appointmentId',isSignedIn,isAuthenticated,getPerticularAppointment,seePerticularAppointment)
-
-//get a perticular appointment details for testing
-router.get('/user/:userId/:appointmentId',getPerticularAppointment,getAppointmentDetails);
-
-//save appointment to history
-//saving successfull appointment
-router.get('/user/:userId/running_appointments/:appointmentId/success',isSignedIn,isAuthenticated,getPerticularAppointment,MoveToHistory);
-
-//remove running appointment
-// router.get('/user/:userId/running_appointments/:appointmentId/remove',isSignedIn,isAuthenticated,getPerticularAppointment,MoveToHistoryByRemove);
+//hospitals sort by its district
 
 
-//get user for profile details
-router.get ('/users/:userId',isSignedIn,isAuthenticated,getUser);
+//Appointment sending
+Router.post('/hospitals/:hospitalId',isSignedIn,isAuthenticated,sendAppointment);
+
+//See Pending Appointments
+Router.get('/users/:userId/pending_appointments',isSignedIn,isAuthenticated,getAllAppointments);
+
+//see the perticular appointment
+Router.get('/user/:userId/:appointmentId',seePerticularAppoinment);
 
 
-//sending appointments
-router.post('/hospitals/:hospitalId',isSignedIn,isAuthenticated,sendAppointment);
+//Retrive Running Appointment
+Router.get('/user/:userId/running_appointments',isSignedIn,isAuthenticated,getRunningAppointments);
 
-//updating profile
-router.put('/users/:userId/profile',isSignedIn,isAuthenticated,updateUserProfile);
+//delete the appointment
+Router.get('/user/:userId/:appointmentId/remove',isSignedIn,isAuthenticated,MoveToHistoryByRemove);
+//Move to History After its Successfull
+Router.get('/user/:userId/:appointmentId/success',isSignedIn,isAuthenticated,MoveToHistory);
 
-//updating password
-router.post('/user/forgot_password/:userId',isSignedIn,isAuthenticated,forgot_password);
 
 
-module.exports = router;
+
+module.exports = Router;
